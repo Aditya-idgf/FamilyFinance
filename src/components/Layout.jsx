@@ -10,7 +10,9 @@ import {
   Users,
   Menu,
   X,
-  UserCircle
+  UserCircle,
+  Copy,
+  Check
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -25,6 +27,15 @@ export default function Layout() {
   const { family, members } = useFamily();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyCode = async () => {
+    if (family?.family_id) {
+      await navigator.clipboard.writeText(family.family_id);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -85,9 +96,29 @@ export default function Layout() {
         {family && (
           <div className="mx-4 mb-4">
             <div className="p-3 rounded-xl bg-white/5 border border-white/5">
-              <div className="flex items-center gap-2 mb-3">
-                <Users className="w-4 h-4 text-purple-400" />
-                <span className="text-white text-sm font-semibold truncate">{family.name}</span>
+              <div className="mb-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <Users className="w-4 h-4 text-purple-400" />
+                  <span className="text-white text-sm font-semibold truncate">{family.name}</span>
+                </div>
+                {/* Family Code Share */}
+                <div className="flex items-center justify-between bg-black/20 rounded-lg p-2 border border-white/5 group">
+                  <div className="flex flex-col min-w-0 mr-2 flex-1">
+                    <span className="text-[10px] text-gray-500 font-medium uppercase tracking-wider mb-0.5">Family Code</span>
+                    <span className="text-xs text-gray-300 font-mono tracking-wide truncate">{family.family_id}</span>
+                  </div>
+                  <button
+                    onClick={handleCopyCode}
+                    className="p-1.5 hover:bg-white/10 rounded-md transition-all duration-200 flex-shrink-0"
+                    title="Copy Family Code"
+                  >
+                    {copied ? (
+                      <Check className="w-4 h-4 text-emerald-400" />
+                    ) : (
+                      <Copy className="w-4 h-4 text-gray-400 hover:text-white" />
+                    )}
+                  </button>
+                </div>
               </div>
               {/* Member list */}
               <div className="space-y-1.5 max-h-40 overflow-y-auto custom-scrollbar">
